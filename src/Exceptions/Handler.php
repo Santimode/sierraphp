@@ -27,14 +27,18 @@ final class Handler
 
     private function renderDebug(Throwable $e): Response
     {
+        $status = $e instanceof \Sierra\Http\HttpException ? $e->getStatusCode() : 500;
+
         // Use Whoops if available
         if (class_exists(\Whoops\Run::class)) {
             $whoops = new \Whoops\Run;
             $whoops->allowQuit(false);
             $whoops->writeToOutput(false);
-            $whoops->pushHandler(new \Whoops\Handler\PrettyPageHandler);
+            $handler = new \Whoops\Handler\PrettyPageHandler();
+            $handler->handleUnconditionally(true);
+            $whoops->pushHandler($handler);
             $html = $whoops->handleException($e);
-            return new Response($html, 500, ['Content-Type' => 'text/html']);
+            return new Response($html, $status, ['Content-Type' => 'text/html']);
         }
 
         // Fallback pretty page
@@ -46,7 +50,7 @@ final class Handler
             htmlspecialchars($e->getTraceAsString()),
             htmlspecialchars((string)$e)
         );
-        return new Response($html, 500, ['Content-Type' => 'text/html']);
+        return new Response($html, $status, ['Content-Type' => 'text/html']);
     }
 
     private function renderProduction(Throwable $e): Response

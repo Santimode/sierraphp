@@ -2,13 +2,21 @@
 declare(strict_types=1);
 
 use Sierra\Http\Response;
+use Sierra\Http\HttpException;
 use Sierra\Container\Container;
+
+if (!function_exists('abort')) {
+    function abort(int $status, string $message = ''): never
+    {
+        throw new HttpException($status, $message);
+    }
+}
 
 if (!function_exists('app')) {
     function app(?string $id = null): mixed
     {
-        global $sierraApp;
-        $container = $sierraApp?->getContainer() ?? new Container();
+        global $sierraApp, $sierraContainer;
+        $container = $sierraApp?->getContainer() ?? ($sierraContainer ??= new Container());
         return $id ? $container->get($id) : $container;
     }
 }

@@ -1,6 +1,6 @@
 # AGENTS.md — sierraPHP (sierraphp)
 
-> Version: 2.2.0 | Repo: Santimode/sierraphp | Updated: 2026-09-01
+> Version: 2.3.0 | Repo: Santimode/sierraphp | Updated: 2026-09-01
 > Brand: sierraPHP | This file instructs AI coding agents.
 
 ### Naming
@@ -51,12 +51,14 @@ Do NOT create README-V2.md. Instead:
 ### Good / Bad
 Good: Container auto-wiring + test
 Good: Exception Handler with distinct debug/production render paths, status code preserved via HttpException
+Good: Writing matching Pest tests for all core src/ components (Container, Request, Router, HttpException, Handler, Helper, Middleware)
 Bad: Adds ORM, Auth, Blade in MVP, or uppercase composer name
 Bad: Leaking stack traces or file paths to the client when APP_DEBUG=false
-Bad: Writing new src/ code without a matching Pest test (Handler and HttpException currently lack tests — do not repeat this gap elsewhere)
+Bad: Writing new src/ code without a matching Pest test
 
 ---
 Changelog:
+- 2.3.0: Full Pest test suite for Handler, HttpException, Helper, Middleware; abort() helper added
 - 2.2.0: Added Exceptions\Handler + Http\HttpException, LogMiddleware, file ownership rule for Exceptions module
 - 2.1.1: Enforced clean filenames, version inside file
 - 2.0.0: Lowercase repo

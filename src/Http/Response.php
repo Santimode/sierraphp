@@ -12,7 +12,18 @@ class Response
 
     public function getStatusCode(): int { return $this->status; }
     public function getContent(): mixed { return $this->content; }
+    public function getBody(): mixed { return $this->content; }
     public function getHeaders(): array { return $this->headers; }
+
+    public function getHeader(string $key): ?string
+    {
+        foreach ($this->headers as $k => $v) {
+            if (strcasecmp($k, $key) === 0) {
+                return $v;
+            }
+        }
+        return null;
+    }
 
     public function status(int $code): self { $this->status = $code; return $this; }
     public function header(string $key, string $value): self { $this->headers[$key] = $value; return $this; }
