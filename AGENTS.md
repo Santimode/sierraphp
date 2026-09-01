@@ -1,6 +1,6 @@
 # AGENTS.md — sierraPHP (sierraphp)
 
-> Version: 2.5.0 | Repo: Santimode/sierraphp | Updated: 2026-09-01
+> Version: 2.6.0 | Repo: Santimode/sierraphp | Updated: 2026-09-01
 > Brand: sierraPHP | This file instructs AI coding agents.
 
 ### Naming
@@ -34,12 +34,13 @@ php -S localhost:8000 -t public
 5. Middleware: process(Request $req, callable $next): Response
 
 ### File Ownership
-- Container: no deps on Router/Http
+- Container: no deps on Router/Http/Log
 - Router: only Container
 - Http: standalone (includes HttpException — carries a status code, no framework deps)
-- Exceptions: depends only on Http (needs Response, checks for HttpException); catches Throwable in Application::run(), never lets an exception escape to the client uncaught
+- Log: standalone interface and implementation
+- Exceptions: depends on Http and Log (needs Response, checks for HttpException, uses LoggerInterface); catches Throwable in Application::run(), never lets an exception escape to the client uncaught
 - Application: wires all, owns the try/catch boundary around dispatch
-- Middleware: LogMiddleware is standalone, depends only on Http
+- Middleware: standalone, depends on Http and Log
 - Support: helpers + facades
 
 ### Versioning Inside File (per user request)
@@ -51,13 +52,15 @@ Do NOT create README-V2.md. Instead:
 ### Good / Bad
 Good: Container auto-wiring + test
 Good: Exception Handler with distinct debug/production render paths, status code preserved via HttpException
-Good: Writing matching Pest tests for all core src/ components (Container, Request, Router, HttpException, Handler, Helper, Middleware)
+Good: Structured File Logging with context JSON and placeholder interpolation
+Good: Writing matching Pest tests for all core src/ components (Container, Request, Router, HttpException, Handler, Helper, Middleware, Logger)
 Bad: Adds ORM, Auth, Blade in MVP, or uppercase composer name
 Bad: Leaking stack traces or file paths to the client when APP_DEBUG=false
 Bad: Writing new src/ code without a matching Pest test
 
 ---
 Changelog:
+- 2.6.0: Added Structured File Logging (LoggerInterface, Logger, Log facade, logger() helper), integrated into Handler and LogMiddleware
 - 2.5.0: Added Error Content Negotiation, CorsMiddleware, SecurityHeadersMiddleware, and GitHub Actions CI workflow
 - 2.4.0: Added full HTTP verbs (PUT, PATCH, DELETE, OPTIONS, HEAD, match, any), route group middleware inheritance, method spoofing, and request inspection helpers
 - 2.3.0: Full Pest test suite for Handler, HttpException, Helper, Middleware; abort() helper added

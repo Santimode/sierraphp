@@ -8,6 +8,8 @@ use Sierra\Http\Request;
 use Sierra\Http\Response;
 use Sierra\Middleware\Stack;
 use Sierra\Exceptions\Handler;
+use Sierra\Log\Logger;
+use Sierra\Log\LoggerInterface;
 
 final class Application
 {
@@ -16,6 +18,7 @@ final class Application
     private string $basePath;
     private array $config = [];
     private Handler $exceptionHandler;
+    private LoggerInterface $logger;
 
     public function __construct(string $basePath)
     {
@@ -36,8 +39,13 @@ final class Application
             $this->config = require $configFile;
         }
 
+        $logPath = $this->config['log_path'] ?? ($this->basePath . '/storage/logs/sierra.log');
+        $this->logger = new Logger($logPath);
+        $this->container->instance(LoggerInterface::class, $this->logger);
+        $this->container->instance(Logger::class, $this->logger);
+
         $debug = (bool)($this->config['debug'] ?? env('APP_DEBUG', true));
-        $this->exceptionHandler = new Handler($debug);
+        $this->exceptionHandler = new Handler($debug, $this->logger);
         $this->container->instance(Handler::class, $this->exceptionHandler);
     }
 

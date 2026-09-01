@@ -75,7 +75,14 @@ final class Container implements ContainerInterface
                 continue;
             }
             if ($type && !$type->isBuiltin()) {
-                $args[] = $this->get($type->getName());
+                $typeName = $type instanceof \ReflectionNamedType ? $type->getName() : (string)$type;
+                if ($this->has($typeName)) {
+                    $args[] = $this->get($typeName);
+                } elseif ($param->isDefaultValueAvailable()) {
+                    $args[] = $param->getDefaultValue();
+                } else {
+                    $args[] = $this->get($typeName);
+                }
             } elseif ($param->isDefaultValueAvailable()) {
                 $args[] = $param->getDefaultValue();
             } else {

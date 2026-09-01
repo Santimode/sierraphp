@@ -70,3 +70,21 @@ if (!function_exists('config')) {
         return $config ?? $default;
     }
 }
+
+if (!function_exists('logger')) {
+    function logger(?string $message = null, array $context = [], string $level = 'info'): mixed
+    {
+        global $sierraApp, $sierraLogger;
+        /** @var \Sierra\Log\LoggerInterface $logger */
+        $logger = $sierraApp?->getContainer()->has(\Sierra\Log\LoggerInterface::class)
+            ? $sierraApp->getContainer()->get(\Sierra\Log\LoggerInterface::class)
+            : ($sierraLogger ??= new \Sierra\Log\Logger());
+
+        if ($message === null) {
+            return $logger;
+        }
+
+        $logger->log($level, $message, $context);
+        return null;
+    }
+}

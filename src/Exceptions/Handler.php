@@ -5,11 +5,15 @@ namespace Sierra\Exceptions;
 use Sierra\Http\Request;
 use Sierra\Http\Response;
 use Sierra\Http\HttpException;
+use Sierra\Log\LoggerInterface;
 use Throwable;
 
 final class Handler
 {
-    public function __construct(private bool $debug = true) {}
+    public function __construct(
+        private bool $debug = true,
+        private ?LoggerInterface $logger = null
+    ) {}
 
     public function handle(Throwable $e, ?Request $request = null): Response
     {
@@ -31,7 +35,16 @@ final class Handler
 
     public function report(Throwable $e): void
     {
-        error_log($e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
+        if ($this->logger) {
+            $this->logger->error($e->getMessage(), [
+                'exception' => get_class($e),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+                'code' => $e->getCode(),
+            ]);
+        } else {
+            error_log($e->getMessage() . " in " . $e->getFile() . ":" . $e->getLine());
+        }
     }
 
     private function renderDebugJson(Throwable $e): Response
