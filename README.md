@@ -4,7 +4,7 @@
 
 A minimalist PHP framework inspired by **Slim's speed** and **Laravel's elegance**.
 
-**Version:** 2.3.0  
+**Version:** 2.4.0  
 **Repo:** `Santimode/sierraphp` — https://github.com/Santimode/sierraphp  
 **Package:** `santimode/sierraphp`  
 **Last Updated:** 2026-09-01  
@@ -15,7 +15,7 @@ A minimalist PHP framework inspired by **Slim's speed** and **Laravel's elegance
 ### Philosophy
 1. Light by default: < 20 core files
 2. Slim-inspired: FastRoute, PSR-15 middleware, front controller
-3. Laravel-inspired: `Route::get()`, `app()`, `abort()`, `response()->json()`, auto-wiring container
+3. Laravel-inspired: `Route::get()`, `Route::post()`, `Route::put()`, `Route::delete()`, `app()`, `abort()`, `response()->json()`, auto-wiring container
 4. No magic: PSR-12, PHP 8.2+ strict types
 
 ### Quick Start
@@ -33,17 +33,23 @@ Visit http://localhost:8000
 ```php
 Route::get('/', fn() => view('welcome', ['name' => 'Santi']));
 Route::get('/api/health', fn() => response()->json(['status' => 'ok']));
-Route::get('/users/{id}', function(Request $req, string $id) {
-    if ($id === '404') abort(404, 'User not found');
-    return response()->json(['user' => $id]);
-})->middleware(LogMiddleware::class);
+
+Route::group(['prefix' => '/users', 'middleware' => [LogMiddleware::class]], function($router) {
+    $router->get('/{id}', function(Request $req, string $id) {
+        if ($id === '404') abort(404, 'User not found');
+        return response()->json(['user' => $id]);
+    });
+    
+    $router->put('/{id}', fn(Request $req, string $id) => response()->json(['updated' => $id, 'data' => $req->all()]));
+    $router->delete('/{id}', fn(Request $req, string $id) => response()->json(['deleted' => $id]));
+});
 ```
 
 ### Testing
 ```bash
 composer test
 ```
-Runs the Pest suite (`ContainerTest`, `RequestTest`, `RouterTest`, `HttpExceptionTest`, `HandlerTest`, `HelperTest`, `MiddlewareTest` — 26 tests, 63 assertions as of 2.3.0). `phpunit.xml` and `.env.example` are committed and required for a clean `composer install` + first run.
+Runs the Pest suite (`ContainerTest`, `RequestTest`, `RouterTest`, `HttpExceptionTest`, `HandlerTest`, `HelperTest`, `MiddlewareTest` — 36 tests, 106 assertions as of 2.4.0). `phpunit.xml` and `.env.example` are committed and required for a clean `composer install` + first run.
 
 ### Error Handling
 Uncaught exceptions and errors are caught centrally in `Application::run()` and passed to `Sierra\Exceptions\Handler`:
@@ -59,6 +65,8 @@ sierraphp/
 │   ├── Application.php
 │   ├── Container/Container.php
 │   ├── Router/
+│   │   ├── Route.php
+│   │   └── Router.php
 │   ├── Http/
 │   │   ├── Request.php
 │   │   ├── Response.php
@@ -69,7 +77,8 @@ sierraphp/
 │   │   ├── Stack.php
 │   │   └── LogMiddleware.php
 │   └── Support/
-│       └── helpers.php
+│       ├── helpers.php
+│       └── Facades/Route.php
 ├── public/index.php
 ├── routes/web.php
 ├── config/app.php
@@ -90,6 +99,7 @@ sierraphp/
 - No CI workflow running `composer test` on push/PR
 
 ### Changelog (inside file versioning)
+- 2.4.0 (2026-09-01): Added full HTTP verb routing (PUT, PATCH, DELETE, OPTIONS, HEAD, match, any), route group middleware inheritance, Request method spoofing (`_method`, `X-HTTP-Method-Override`), and Request inspection helpers (36 passing tests / 106 assertions)
 - 2.3.0 (2026-09-01): Added `abort()` helper, `Response::getBody()` / `Response::getHeader()`, `filp/whoops` require-dev, and full Pest test coverage across `Handler`, `HttpException`, `Helper`, and `Middleware` (26 passing tests / 63 assertions)
 - 2.2.0 (2026-09-01): Added `Exceptions\Handler` + `Http\HttpException` (wired into `Application::run()`), `LogMiddleware`, `.env.example`, `phpunit.xml`, and the first Pest tests (Container, Request, Router — 10 passing)
 - 2.1.1 (2026-09-01): Cleaned duplicate code, fixed `Request` immutability

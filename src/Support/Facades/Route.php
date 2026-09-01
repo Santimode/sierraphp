@@ -10,7 +10,11 @@ use Sierra\Router\Route as RouteObject;
  * @method static RouteObject put(string $uri, mixed $handler)
  * @method static RouteObject patch(string $uri, mixed $handler)
  * @method static RouteObject delete(string $uri, mixed $handler)
- * @method static void group(string $prefix, \Closure $callback)
+ * @method static RouteObject options(string $uri, mixed $handler)
+ * @method static RouteObject head(string $uri, mixed $handler)
+ * @method static RouteObject[] match(array $methods, string $uri, mixed $handler)
+ * @method static RouteObject[] any(string $uri, mixed $handler)
+ * @method static void group(string|array $attributes, \Closure $callback)
  */
 final class Route
 {

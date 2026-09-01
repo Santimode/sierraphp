@@ -1,6 +1,6 @@
 # AGENTS.md — sierraPHP (sierraphp)
 
-> Version: 2.3.0 | Repo: Santimode/sierraphp | Updated: 2026-09-01
+> Version: 2.4.0 | Repo: Santimode/sierraphp | Updated: 2026-09-01
 > Brand: sierraPHP | This file instructs AI coding agents.
 
 ### Naming
@@ -58,6 +58,7 @@ Bad: Writing new src/ code without a matching Pest test
 
 ---
 Changelog:
+- 2.4.0: Added full HTTP verbs (PUT, PATCH, DELETE, OPTIONS, HEAD, match, any), route group middleware inheritance, method spoofing, and request inspection helpers
 - 2.3.0: Full Pest test suite for Handler, HttpException, Helper, Middleware; abort() helper added
 - 2.2.0: Added Exceptions\Handler + Http\HttpException, LogMiddleware, file ownership rule for Exceptions module
 - 2.1.1: Enforced clean filenames, version inside file

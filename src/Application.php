@@ -65,8 +65,24 @@ final class Application
         return $val;
     }
 
-    public function get(string $uri, mixed $handler) { return $this->router->get($uri, $handler); }
-    public function post(string $uri, mixed $handler) { return $this->router->post($uri, $handler); }
+    public function get(string $uri, mixed $handler): \Sierra\Router\Route { return $this->router->get($uri, $handler); }
+    public function post(string $uri, mixed $handler): \Sierra\Router\Route { return $this->router->post($uri, $handler); }
+    public function put(string $uri, mixed $handler): \Sierra\Router\Route { return $this->router->put($uri, $handler); }
+    public function patch(string $uri, mixed $handler): \Sierra\Router\Route { return $this->router->patch($uri, $handler); }
+    public function delete(string $uri, mixed $handler): \Sierra\Router\Route { return $this->router->delete($uri, $handler); }
+    public function options(string $uri, mixed $handler): \Sierra\Router\Route { return $this->router->options($uri, $handler); }
+    public function head(string $uri, mixed $handler): \Sierra\Router\Route { return $this->router->head($uri, $handler); }
+
+    /**
+     * @param string[] $methods
+     * @return \Sierra\Router\Route[]
+     */
+    public function match(array $methods, string $uri, mixed $handler): array { return $this->router->match($methods, $uri, $handler); }
+
+    /** @return \Sierra\Router\Route[] */
+    public function any(string $uri, mixed $handler): array { return $this->router->any($uri, $handler); }
+
+    public function group(string|array $attributes, \Closure $callback): void { $this->router->group($attributes, $callback); }
 
     public function run(?Request $request = null): void
     {
