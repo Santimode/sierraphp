@@ -4,7 +4,7 @@
 
 A minimalist PHP framework inspired by **Slim's speed** and **Laravel's elegance**.
 
-**Version:** 2.1.0  
+**Version:** 2.2.0  
 **Repo:** `Santimode/sierraphp` — https://github.com/Santimode/sierraphp  
 **Package:** `santimode/sierraphp`  
 **Last Updated:** 2026-09-01  
@@ -57,9 +57,11 @@ sierraphp/
 - Namespace: `Sierra\`
 
 ### Changelog (inside file versioning)
-- 2.1.0 (2026-09-01): Initial MVP scaffold — Container, Router, Request/Response, Middleware Stack
+- 2.2.0 (2026-09-01): Initial MVP scaffold — Container, Router, Request/Response, Middleware Stack
 - 2.0.0 (2026-09-01): Docs updated to lowercase repo
 - 1.0.0 (2026-09-01): Initial docs
 
 ### License
 MIT © Santimode
+
+- 2.2.0 (2026-09-02): Handler + Whoops + Pest tests + LogMiddleware

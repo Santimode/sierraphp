@@ -1,6 +1,6 @@
 # AGENTS.md — sierraPHP (sierraphp)
 
-> Version: 2.1.0 | Repo: Santimode/sierraphp | Updated: 2026-09-01
+> Version: 2.2.0 | Repo: Santimode/sierraphp | Updated: 2026-09-01
 > Brand: sierraPHP | This file instructs AI coding agents.
 
 ### Naming
@@ -52,6 +52,6 @@ Bad: Adds ORM, Auth, Blade in MVP, or uppercase composer name
 
 ---
 Changelog:
-- 2.1.0: Enforced clean filenames, version inside file
+- 2.2.0: Enforced clean filenames, version inside file
 - 2.0.0: Lowercase repo
 - 1.0.0: Initial

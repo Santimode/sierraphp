@@ -1,6 +1,6 @@
 # AIHANDOFF.md — sierraPHP
 
-> Version: 2.1.0 | Repo: Santimode/sierraphp | Package: santimode/sierraphp | Updated: 2026-09-01
+> Version: 2.2.0 | Repo: Santimode/sierraphp | Package: santimode/sierraphp | Updated: 2026-09-01
 > Brand: sierraPHP | Namespace: Sierra\ | PHP: ^8.2
 
 This file is the single source of truth for AI agents.
@@ -31,7 +31,7 @@ Tests: router param, middleware chain, container auto-wire, json response, 404
 - Middleware Stack is PSR-15-like
 - Application is glue
 
-### 5. File Map (v2.1.0 Scaffold)
+### 5. File Map (v2.2.0 Scaffold)
 - src/Application.php — creates container, router, runs dispatch
 - src/Container/Container.php — bind/singleton/get/has/make
 - src/Router/Route.php — value object
@@ -46,7 +46,7 @@ Tests: router param, middleware chain, container auto-wire, json response, 404
 ### 6. Versioning Inside File (your request)
 Instead of `README-V2.md`, use:
 ```
-Version: 2.1.0
+Version: 2.2.0
 Last Updated: 2026-09-01
 Changelog at bottom of file
 ```
@@ -60,6 +60,6 @@ Clean filenames: README.md, AIHANDOFF.md, AGENTS.md
 
 ---
 Changelog:
-- 2.1.0: Added scaffold details, clarified version-in-file strategy
+- 2.2.0: Added scaffold details, clarified version-in-file strategy
 - 2.0.0: Lowercase repo decision
 - 1.0.0: Initial
