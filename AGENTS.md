@@ -36,8 +36,10 @@ php -S localhost:8000 -t public
 ### File Ownership
 - Container: no deps on Router/Http
 - Router: only Container
-- Http: standalone
-- Application: wires all
+- Http: standalone (includes HttpException — carries a status code, no framework deps)
+- Exceptions: depends only on Http (needs Response, checks for HttpException); catches Throwable in Application::run(), never lets an exception escape to the client uncaught
+- Application: wires all, owns the try/catch boundary around dispatch
+- Middleware: LogMiddleware is standalone, depends only on Http
 - Support: helpers + facades
 
 ### Versioning Inside File (per user request)
@@ -48,10 +50,14 @@ Do NOT create README-V2.md. Instead:
 
 ### Good / Bad
 Good: Container auto-wiring + test
+Good: Exception Handler with distinct debug/production render paths, status code preserved via HttpException
 Bad: Adds ORM, Auth, Blade in MVP, or uppercase composer name
+Bad: Leaking stack traces or file paths to the client when APP_DEBUG=false
+Bad: Writing new src/ code without a matching Pest test (Handler and HttpException currently lack tests — do not repeat this gap elsewhere)
 
 ---
 Changelog:
-- 2.2.0: Enforced clean filenames, version inside file
+- 2.2.0: Added Exceptions\Handler + Http\HttpException, LogMiddleware, file ownership rule for Exceptions module
+- 2.1.1: Enforced clean filenames, version inside file
 - 2.0.0: Lowercase repo
 - 1.0.0: Initial
