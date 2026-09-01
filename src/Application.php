@@ -129,7 +129,7 @@ final class Application
                     return;
             }
         } catch (\Throwable $e) {
-            $response = $this->exceptionHandler->handle($e);
+            $response = $this->exceptionHandler->handle($e, $request ?? null);
             $response->send();
         }
     }
