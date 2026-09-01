@@ -25,25 +25,35 @@ final class Request
         $body = $_POST;
         $contentType = $_SERVER['CONTENT_TYPE'] ?? '';
         if (str_contains($contentType, 'application/json')) {
-            $json = json_decode(file_get_contents('php://input'), true);
+            $raw = file_get_contents('php://input');
+            $json = json_decode($raw, true);
             if (is_array($json)) $body = array_merge($body, $json);
         }
 
         return new self($method, $uri, $_GET, $body, $headers, [], $_SERVER);
     }
 
-    public function input(string $key, mixed $default = null): mixed
+    public function input(?string $key = null, mixed $default = null): mixed
     {
+        if ($key === null) {
+            return $this->all();
+        }
         return $this->body[$key] ?? $this->query[$key] ?? $default;
     }
 
-    public function query(string $key, mixed $default = null): mixed
+    public function query(?string $key = null, mixed $default = null): mixed
     {
+        if ($key === null) {
+            return $this->query;
+        }
         return $this->query[$key] ?? $default;
     }
 
-    public function get(string $key, mixed $default = null): mixed
+    public function get(?string $key = null, mixed $default = null): mixed
     {
+        if ($key === null) {
+            return $this->all();
+        }
         return $this->input($key, $default);
     }
 
@@ -60,24 +70,33 @@ final class Request
         return $this->attributes[$key] ?? $default;
     }
 
+    // FIXED: Don't use Reflection on readonly property, create new instance
     public function withAttribute(string $key, mixed $value): self
     {
-        $clone = clone $this;
-        $newAttrs = $this->attributes;
-        $newAttrs[$key] = $value;
-        // readonly hack via reflection for clone
-        $ref = new \ReflectionObject($clone);
-        $prop = $ref->getProperty('attributes');
-        $prop->setValue($clone, $newAttrs);
-        return $clone;
+        $newAttributes = $this->attributes;
+        $newAttributes[$key] = $value;
+
+        return new self(
+            $this->method,
+            $this->uri,
+            $this->query,
+            $this->body,
+            $this->headers,
+            $newAttributes,
+            $this->server
+        );
     }
 
     public function withAttributes(array $attrs): self
     {
-        $req = $this;
-        foreach ($attrs as $k => $v) {
-            $req = $req->withAttribute($k, $v);
-        }
-        return $req;
+        return new self(
+            $this->method,
+            $this->uri,
+            $this->query,
+            $this->body,
+            $this->headers,
+            array_merge($this->attributes, $attrs),
+            $this->server
+        );
     }
 }
