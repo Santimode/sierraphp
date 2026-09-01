@@ -1,5 +1,9 @@
 # sierraPHP
 
+[![Tests](https://github.com/Santimode/sierraphp/actions/workflows/tests.yml/badge.svg)](https://github.com/Santimode/sierraphp/actions/workflows/tests.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
+[![PHP: ^8.2](https://img.shields.io/badge/PHP-%5E8.2-777bb4.svg)](https://php.net)
+
 > Light as the Sierra Madre, powerful as it needs to be.
 
 A minimalist PHP framework inspired by **Slim's speed** and **Laravel's elegance**.
