@@ -95,11 +95,10 @@ final class Application
 
             switch ($routeInfo[0]) {
                 case \FastRoute\Dispatcher::NOT_FOUND:
-                    (new Response("404 Not Found - sierraPHP", 404))->send();
-                    return;
+                    throw new \Sierra\Http\HttpException(404, "Route [{$request->getMethod()} {$request->getUri()}] not found");
                 case \FastRoute\Dispatcher::METHOD_NOT_ALLOWED:
-                    (new Response("405 Method Not Allowed", 405))->send();
-                    return;
+                    $allowedMethods = (array)($routeInfo[1] ?? []);
+                    throw new \Sierra\Http\HttpException(405, "Method [{$request->getMethod()}] not allowed for [{$request->getUri()}]. Allowed: " . implode(', ', $allowedMethods));
                 case \FastRoute\Dispatcher::FOUND:
                     $route = $routeInfo[1];
                     $vars = $routeInfo[2];

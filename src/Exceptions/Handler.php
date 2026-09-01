@@ -78,12 +78,27 @@ final class Handler
         return new Response($html, $status, ['Content-Type' => 'text/html']);
     }
 
+    private function getStatusMessage(int $status): string
+    {
+        return match ($status) {
+            400 => 'Bad Request',
+            401 => 'Unauthorized',
+            403 => 'Forbidden',
+            404 => 'Not Found',
+            405 => 'Method Not Allowed',
+            422 => 'Unprocessable Entity',
+            429 => 'Too Many Requests',
+            503 => 'Service Unavailable',
+            default => 'Server Error',
+        };
+    }
+
     private function renderProductionJson(Throwable $e): Response
     {
         $status = $e instanceof HttpException ? $e->getStatusCode() : 500;
         $message = $e instanceof HttpException && $e->getMessage() !== ''
             ? $e->getMessage()
-            : ($status === 404 ? 'Not Found' : ($status === 403 ? 'Forbidden' : 'Server Error'));
+            : $this->getStatusMessage($status);
 
         return (new Response())->json([
             'message' => $message,
@@ -96,7 +111,7 @@ final class Handler
         $status = $e instanceof HttpException ? $e->getStatusCode() : 500;
         $message = $e instanceof HttpException && $e->getMessage() !== ''
             ? $e->getMessage()
-            : ($status === 404 ? 'Page Not Found' : ($status === 403 ? 'Forbidden Access' : 'Server Error'));
+            : $this->getStatusMessage($status);
 
         $html = sprintf(
             '<!DOCTYPE html><html><head><meta charset="utf-8"><title>%d %s - sierraPHP</title><style>body{margin:0;padding:0;background:#0b0f19;color:#f3f4f6;font-family:system-ui,-apple-system,sans-serif;display:flex;align-items:center;justify-content:center;min-height:100vh}div{text-align:center;padding:2rem}h1{font-size:4rem;margin:0;color:#ef4444;font-weight:700}p{font-size:1.25rem;color:#9ca3af;margin:1rem 0 0}</style></head><body><div><h1>%d</h1><p>%s</p></div></body></html>',

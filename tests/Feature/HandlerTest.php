@@ -97,6 +97,30 @@ it('preserves HttpException status code and message in production mode', functio
         ]);
 });
 
+it('handles 404 and 405 error responses with negotiated JSON', function () {
+    $handler = new Handler(debug: false);
+
+    $e404 = new HttpException(404, 'Route [/missing] not found');
+    $req404 = new Request('GET', '/api/missing', [], [], [], [], []);
+    $res404 = $handler->handle($e404, $req404);
+
+    expect($res404->getStatusCode())->toBe(404)
+        ->and(json_decode($res404->getBody(), true))->toBe([
+            'message' => 'Route [/missing] not found',
+            'framework' => 'sierraPHP',
+        ]);
+
+    $e405 = new HttpException(405, 'Method [POST] not allowed');
+    $req405 = new Request('POST', '/api/posts', [], [], [], [], []);
+    $res405 = $handler->handle($e405, $req405);
+
+    expect($res405->getStatusCode())->toBe(405)
+        ->and(json_decode($res405->getBody(), true))->toBe([
+            'message' => 'Method [POST] not allowed',
+            'framework' => 'sierraPHP',
+        ]);
+});
+
 it('reports exceptions via report method without throwing', function () {
     $handler = new Handler(debug: true);
     $exception = new Exception('Logged error');

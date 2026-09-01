@@ -93,8 +93,21 @@ final class Request
 
     public function expectsJson(): bool
     {
+        if ($this->isJson()) {
+            return true;
+        }
+
         $accept = (string)($this->header('Accept') ?? ($this->server['HTTP_ACCEPT'] ?? ''));
-        return str_contains($accept, '/json') || str_contains($accept, '+json');
+        if (str_contains($accept, '/json') || str_contains($accept, '+json')) {
+            return true;
+        }
+
+        $requestedWith = (string)($this->header('X-Requested-With') ?? ($this->server['HTTP_X_REQUESTED_WITH'] ?? ''));
+        if (strcasecmp($requestedWith, 'XMLHttpRequest') === 0) {
+            return true;
+        }
+
+        return str_starts_with($this->uri, '/api');
     }
 
     public function getAttribute(string $key, mixed $default = null): mixed { return $this->attributes[$key] ?? $default; }
