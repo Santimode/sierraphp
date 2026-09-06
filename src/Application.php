@@ -47,6 +47,13 @@ final class Application
         $debug = (bool)($this->config['debug'] ?? env('APP_DEBUG', true));
         $this->exceptionHandler = new Handler($debug, $this->logger);
         $this->container->instance(Handler::class, $this->exceptionHandler);
+
+        $routeCacheEnabled = !$debug;
+        $routeCacheFile = $this->basePath . '/storage/cache/routes.cache';
+        if (!is_dir(dirname($routeCacheFile))) {
+            @mkdir(dirname($routeCacheFile), 0755, true);
+        }
+        $this->router->setCacheConfig($routeCacheEnabled, $routeCacheFile);
     }
 
     public static function create(string $basePath): self

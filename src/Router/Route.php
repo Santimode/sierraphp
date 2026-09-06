@@ -6,6 +6,7 @@ final class Route
 {
     public array $middleware = [];
     public ?string $name = null;
+    public array $wheres = [];
 
     public function __construct(
         public readonly string $method,
@@ -22,6 +23,16 @@ final class Route
     public function name(string $name): self
     {
         $this->name = $name;
+        return $this;
+    }
+
+    public function where(string|array $param, ?string $regex = null): self
+    {
+        if (is_array($param)) {
+            $this->wheres = array_merge($this->wheres, $param);
+        } else {
+            $this->wheres[$param] = $regex;
+        }
         return $this;
     }
 }

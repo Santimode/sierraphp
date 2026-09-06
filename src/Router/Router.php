@@ -12,6 +12,43 @@ final class Router
     private array $routes = [];
     private string $groupPrefix = '';
     private array $groupMiddleware = [];
+    private bool $cacheEnabled = false;
+    private string $cacheFile = '';
+
+    public function setCacheConfig(bool $enabled, string $file): void
+    {
+        $this->cacheEnabled = $enabled;
+        $this->cacheFile = $file;
+    }
+
+    public function getNamedRoute(string $name): ?Route
+    {
+        foreach ($this->routes as $route) {
+            if ($route->name === $name) {
+                return $route;
+            }
+        }
+        return null;
+    }
+
+    public function generateUrl(string $name, array $params = []): string
+    {
+        $route = $this->getNamedRoute($name);
+        if (!$route) {
+            throw new \RuntimeException("Route [{$name}] not found");
+        }
+
+        $uri = $route->uri;
+        foreach ($params as $key => $value) {
+            $uri = preg_replace('/\{' . $key . '(:[^\}]+)?\}/', (string)$value, $uri);
+        }
+
+        if (preg_match('/\{[a-zA-Z0-9_]+(:[^\}]+)?\}/', $uri, $matches)) {
+            throw new \RuntimeException("Missing parameter [{$matches[0]}] for route [{$name}]");
+        }
+
+        return $uri;
+    }
 
     public function add(string $method, string $uri, mixed $handler): Route
     {
@@ -82,12 +119,26 @@ final class Router
 
     public function dispatch(string $method, string $uri): array
     {
-        $dispatcher = simpleDispatcher(function(RouteCollector $r) {
-            foreach ($this->routes as $route) {
-                $r->addRoute($route->method, $route->uri, $route);
+        $dispatcher = \FastRoute\cachedDispatcher(function(RouteCollector $r) {
+            foreach ($this->routes as $index => $route) {
+                $routeUri = $route->uri;
+                foreach ($route->wheres as $param => $regex) {
+                    $routeUri = preg_replace('/\{(' . $param . ')(:[^\}]+)?\}/', '{$1:' . $regex . '}', $routeUri);
+                }
+                $r->addRoute($route->method, $routeUri, $index);
             }
-        });
+        }, [
+            'cacheFile' => $this->cacheFile ?: sys_get_temp_dir() . '/routes.cache',
+            'cacheDisabled' => !$this->cacheEnabled,
+        ]);
 
-        return $dispatcher->dispatch(strtoupper($method), $uri);
+        $routeInfo = $dispatcher->dispatch(strtoupper($method), $uri);
+
+        if ($routeInfo[0] === Dispatcher::FOUND) {
+            $index = $routeInfo[1];
+            $routeInfo[1] = $this->routes[$index] ?? null;
+        }
+
+        return $routeInfo;
     }
 }

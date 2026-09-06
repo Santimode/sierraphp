@@ -102,3 +102,46 @@ it('attaches group middleware to routes inside group', function () {
     expect($routes[0]->middleware)->toBe(['AuthMiddleware'])
         ->and($routes[1]->middleware)->toBe(['AuthMiddleware', 'CsrfMiddleware']);
 });
+
+it('supports regex constraints using where', function () {
+    $router = new Router();
+    $router->get('/user/{id}', fn () => 'user')->where('id', '[0-9]+');
+
+    expect($router->dispatch('GET', '/user/123')[0])->toBe(Dispatcher::FOUND)
+        ->and($router->dispatch('GET', '/user/abc')[0])->toBe(Dispatcher::NOT_FOUND);
+});
+
+it('can name a route and generate its URL', function () {
+    $router = new Router();
+    $router->get('/profile/{id}', fn () => 'profile')->name('profile.show');
+
+    $url = $router->generateUrl('profile.show', ['id' => 42]);
+    expect($url)->toBe('/profile/42');
+});
+
+it('throws exception when generating URL with missing parameters', function () {
+    $router = new Router();
+    $router->get('/profile/{id}', fn () => 'profile')->name('profile.show');
+
+    $router->generateUrl('profile.show', []);
+})->throws(\RuntimeException::class);
+
+it('caches routes when enabled', function () {
+    $cacheFile = sys_get_temp_dir() . '/sierraphp_routes_test.cache';
+    if (file_exists($cacheFile)) unlink($cacheFile);
+
+    $router = new Router();
+    $router->setCacheConfig(true, $cacheFile);
+    $router->get('/fast', fn () => 'fast');
+
+    $info = $router->dispatch('GET', '/fast');
+    expect($info[0])->toBe(Dispatcher::FOUND)
+        ->and(file_exists($cacheFile))->toBeTrue();
+
+    // Secondary dispatch to ensure it reads from cache and returns the Route object
+    $info2 = $router->dispatch('GET', '/fast');
+    expect($info2[0])->toBe(Dispatcher::FOUND)
+        ->and($info2[1])->toBeInstanceOf(Route::class);
+
+    if (file_exists($cacheFile)) unlink($cacheFile);
+});

@@ -1,6 +1,6 @@
 # AGENTS.md — sierraPHP (sierraphp)
 
-> Version: 2.6.0 | Repo: Santimode/sierraphp | Updated: 2026-09-01
+> Version: 2.7.0 | Repo: Santimode/sierraphp | Updated: 2026-09-07
 > Brand: sierraPHP | This file instructs AI coding agents.
 
 ### Naming
@@ -60,6 +60,7 @@ Bad: Writing new src/ code without a matching Pest test
 
 ---
 Changelog:
+- 2.7.0: Added advanced routing enhancements: named routes, route parameter regex constraints, and FastRoute production caching.
 - 2.6.0: Added Structured File Logging (LoggerInterface, Logger, Log facade, logger() helper), integrated into Handler and LogMiddleware
 - 2.5.0: Added Error Content Negotiation, CorsMiddleware, SecurityHeadersMiddleware, and GitHub Actions CI workflow
 - 2.4.0: Added full HTTP verbs (PUT, PATCH, DELETE, OPTIONS, HEAD, match, any), route group middleware inheritance, method spoofing, and request inspection helpers

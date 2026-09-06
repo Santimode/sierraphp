@@ -88,3 +88,14 @@ if (!function_exists('logger')) {
         return null;
     }
 }
+
+if (!function_exists('route')) {
+    function route(string $name, array $params = []): string
+    {
+        global $sierraApp;
+        if (!$sierraApp) {
+            throw new \RuntimeException("Application not booted");
+        }
+        return $sierraApp->getRouter()->generateUrl($name, $params);
+    }
+}

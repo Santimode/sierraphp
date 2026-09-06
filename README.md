@@ -8,10 +8,10 @@
 
 A minimalist PHP framework inspired by **Slim's speed** and **Laravel's elegance**.
 
-**Version:** 2.6.0  
+**Version:** 2.7.0  
 **Repo:** `Santimode/sierraphp` — https://github.com/Santimode/sierraphp  
 **Package:** `santimode/sierraphp`  
-**Last Updated:** 2026-09-01  
+**Last Updated:** 2026-09-07  
 **Status:** Hardened, feature-complete, tested & production-ready
 
 ---
@@ -54,7 +54,7 @@ Route::group(['prefix' => '/api', 'middleware' => [CorsMiddleware::class, Securi
 ```bash
 composer test
 ```
-Runs the Pest suite (`ContainerTest`, `RequestTest`, `RouterTest`, `HttpExceptionTest`, `HandlerTest`, `HelperTest`, `MiddlewareTest`, `LoggerTest` — 49 tests, 158 assertions as of 2.6.0). Automated GitHub Actions CI workflow runs tests against PHP 8.2, 8.3, and 8.4 on every push and PR.
+Runs the Pest suite (`ContainerTest`, `RequestTest`, `RouterTest`, `HttpExceptionTest`, `HandlerTest`, `HelperTest`, `MiddlewareTest`, `LoggerTest` — 53 tests, 166 assertions as of 2.7.0). Automated GitHub Actions CI workflow runs tests against PHP 8.2, 8.3, and 8.4 on every push and PR.
 
 ### Logging
 Structured file logging writing to `storage/logs/sierra.log` with timestamp, log level, message placeholder interpolation, and context JSON:
@@ -116,6 +116,7 @@ sierraphp/
 - Namespace: `Sierra\`
 
 ### Changelog (inside file versioning)
+- 2.7.0 (2026-09-07): Added advanced routing enhancements: named routes (`->name()`, `route()` helper), route parameter regex constraints (`->where()`), and zero-serialization FastRoute production caching. Test suite expanded (53 tests / 166 assertions)
 - 2.6.0 (2026-09-01): Added Structured File Logging (`Sierra\Log\LoggerInterface`, `Sierra\Log\Logger`, `Sierra\Support\Facades\Log`, `logger()` helper), integrated structured logging into `Exceptions\Handler` and `LogMiddleware`, and added comprehensive Pest tests (49 passing tests / 158 assertions)
 - 2.5.0 (2026-09-01): Added Error Content Negotiation (structured JSON vs pretty HTML in debug and production modes), security middleware (`CorsMiddleware`, `SecurityHeadersMiddleware`), and GitHub Actions CI workflow for PHP 8.2, 8.3, 8.4
 - 2.4.0 (2026-09-01): Added full HTTP verb routing (PUT, PATCH, DELETE, OPTIONS, HEAD, match, any), route group middleware inheritance, Request method spoofing (`_method`, `X-HTTP-Method-Override`), and Request inspection helpers
