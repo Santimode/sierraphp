@@ -8,7 +8,7 @@
 
 A minimalist PHP framework inspired by **Slim's speed** and **Laravel's elegance**.
 
-**Version:** 2.7.0  
+**Version:** 2.8.0  
 **Repo:** `Santimode/sierraphp` — https://github.com/Santimode/sierraphp  
 **Package:** `santimode/sierraphp`  
 **Last Updated:** 2026-09-07  
@@ -78,15 +78,20 @@ sierraphp/
 ├── .github/workflows/tests.yml
 ├── src/
 │   ├── Application.php
+│   ├── Console/
+│   │   ├── Commands/
+│   │   │   └── MigrateCommand.php
+│   │   └── Kernel.php
 │   ├── Container/Container.php
-│   ├── Router/
-│   │   ├── Route.php
-│   │   └── Router.php
+│   ├── Database/
+│   │   ├── Connection.php
+│   │   └── QueryBuilder.php
+│   ├── Exceptions/Handler.php
 │   ├── Http/
+│   │   ├── FormRequest.php
 │   │   ├── Request.php
 │   │   ├── Response.php
 │   │   └── HttpException.php
-│   ├── Exceptions/Handler.php
 │   ├── Log/
 │   │   ├── LoggerInterface.php
 │   │   └── Logger.php
@@ -96,11 +101,20 @@ sierraphp/
 │   │   ├── LogMiddleware.php
 │   │   ├── CorsMiddleware.php
 │   │   └── SecurityHeadersMiddleware.php
-│   └── Support/
-│       ├── helpers.php
-│       └── Facades/
-│           ├── Route.php
-│           └── Log.php
+│   ├── Router/
+│   │   ├── Route.php
+│   │   └── Router.php
+│   ├── Support/
+│   │   ├── helpers.php
+│   │   ├── ServiceProvider.php
+│   │   └── Facades/
+│   │       ├── Route.php
+│   │       ├── Log.php
+│   │       └── DB.php
+│   └── Validation/
+│       ├── ValidationException.php
+│       └── Validator.php
+├── bin/sierra
 ├── public/index.php
 ├── routes/web.php
 ├── config/app.php
@@ -116,6 +130,7 @@ sierraphp/
 - Namespace: `Sierra\`
 
 ### Changelog (inside file versioning)
+- 2.8.0 (2026-09-07): Added Database component (Connection, QueryBuilder, DB facade), Validation component (Validator, FormRequest auto-resolution), CLI tool (`bin/sierra`), and basic Migrations runner. Test suite expanded (67 tests / 202 assertions).
 - 2.7.0 (2026-09-07): Added advanced routing enhancements: named routes (`->name()`, `route()` helper), route parameter regex constraints (`->where()`), and zero-serialization FastRoute production caching. Test suite expanded (53 tests / 166 assertions)
 - 2.6.0 (2026-09-01): Added Structured File Logging (`Sierra\Log\LoggerInterface`, `Sierra\Log\Logger`, `Sierra\Support\Facades\Log`, `logger()` helper), integrated structured logging into `Exceptions\Handler` and `LogMiddleware`, and added comprehensive Pest tests (49 passing tests / 158 assertions)
 - 2.5.0 (2026-09-01): Added Error Content Negotiation (structured JSON vs pretty HTML in debug and production modes), security middleware (`CorsMiddleware`, `SecurityHeadersMiddleware`), and GitHub Actions CI workflow for PHP 8.2, 8.3, 8.4

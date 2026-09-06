@@ -1,6 +1,6 @@
 # AGENTS.md — sierraPHP (sierraphp)
 
-> Version: 2.7.0 | Repo: Santimode/sierraphp | Updated: 2026-09-07
+> Version: 2.8.0 | Repo: Santimode/sierraphp | Updated: 2026-09-07
 > Brand: sierraPHP | This file instructs AI coding agents.
 
 ### Naming
@@ -41,7 +41,10 @@ php -S localhost:8000 -t public
 - Exceptions: depends on Http and Log (needs Response, checks for HttpException, uses LoggerInterface); catches Throwable in Application::run(), never lets an exception escape to the client uncaught
 - Application: wires all, owns the try/catch boundary around dispatch
 - Middleware: standalone, depends on Http and Log
-- Support: helpers + facades
+- Support: helpers + facades + service providers
+- Database: pure PDO wrapper + Query Builder, no active record ORM
+- Validation: standalone Validator, integrated FormRequests via Reflection
+- Console: minimal CLI tool `sierra`
 
 ### Versioning Inside File (per user request)
 Do NOT create README-V2.md. Instead:
@@ -60,6 +63,7 @@ Bad: Writing new src/ code without a matching Pest test
 
 ---
 Changelog:
+- 2.8.0: Added Database component (Connection, QueryBuilder, DB facade), Validation component (Validator, FormRequest auto-resolution), CLI tool (`bin/sierra`), and basic Migrations runner.
 - 2.7.0: Added advanced routing enhancements: named routes, route parameter regex constraints, and FastRoute production caching.
 - 2.6.0: Added Structured File Logging (LoggerInterface, Logger, Log facade, logger() helper), integrated into Handler and LogMiddleware
 - 2.5.0: Added Error Content Negotiation, CorsMiddleware, SecurityHeadersMiddleware, and GitHub Actions CI workflow

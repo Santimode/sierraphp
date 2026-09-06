@@ -19,6 +19,8 @@ final class Application
     private array $config = [];
     private Handler $exceptionHandler;
     private LoggerInterface $logger;
+    private array $providers = [];
+    private bool $booted = false;
 
     public function __construct(string $basePath)
     {
@@ -44,6 +46,19 @@ final class Application
         $this->container->instance(LoggerInterface::class, $this->logger);
         $this->container->instance(Logger::class, $this->logger);
 
+        $dbConfig = [
+            'driver' => env('DB_CONNECTION', 'sqlite'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', $this->basePath . '/database/database.sqlite'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => env('DB_PASSWORD', ''),
+        ];
+        
+        $this->container->singleton(\Sierra\Database\Connection::class, function () use ($dbConfig) {
+            return new \Sierra\Database\Connection($dbConfig);
+        });
+
         $debug = (bool)($this->config['debug'] ?? env('APP_DEBUG', true));
         $this->exceptionHandler = new Handler($debug, $this->logger);
         $this->container->instance(Handler::class, $this->exceptionHandler);
@@ -62,6 +77,35 @@ final class Application
         $app = new self($basePath);
         $sierraApp = $app;
         return $app;
+    }
+
+    public function registerProvider(\Sierra\Support\ServiceProvider|string $provider): \Sierra\Support\ServiceProvider
+    {
+        if (is_string($provider)) {
+            $provider = new $provider($this);
+        }
+
+        $provider->register();
+        $this->providers[] = $provider;
+
+        if ($this->booted) {
+            $provider->boot();
+        }
+
+        return $provider;
+    }
+
+    public function bootProviders(): void
+    {
+        if ($this->booted) {
+            return;
+        }
+
+        foreach ($this->providers as $provider) {
+            $provider->boot();
+        }
+
+        $this->booted = true;
     }
 
     public function getContainer(): Container { return $this->container; }
@@ -101,6 +145,8 @@ final class Application
 
     public function run(?Request $request = null): void
     {
+        $this->bootProviders();
+
         try {
             $request = $request ?? Request::fromGlobals();
             global $sierraRequest;
@@ -122,11 +168,27 @@ final class Application
                     $stack = new Stack($this->container);
                     $core = function(Request $req) use ($route, $vars) {
                         $handler = $route->handler;
+                        
+                        $resolveRequest = function(array $parameters, Request $req) {
+                            $firstParamType = isset($parameters[0]) && $parameters[0]->hasType() ? $parameters[0]->getType()->getName() : null;
+                            if ($firstParamType && is_subclass_of($firstParamType, \Sierra\Http\FormRequest::class)) {
+                                $formRequest = $firstParamType::createFromBase($req);
+                                $formRequest->validateResolved();
+                                return $formRequest;
+                            }
+                            return $req;
+                        };
+
                         if ($handler instanceof \Closure) {
+                            $reflection = new \ReflectionFunction($handler);
+                            $req = $resolveRequest($reflection->getParameters(), $req);
                             $result = $handler(...array_merge([$req], array_values($vars)));
                         } elseif (is_array($handler)) {
                             $controller = $this->container->get($handler[0]);
-                            $result = $controller->{$handler[1]}(...array_merge([$req], array_values($vars)));
+                            $method = $handler[1];
+                            $reflection = new \ReflectionMethod($controller, $method);
+                            $req = $resolveRequest($reflection->getParameters(), $req);
+                            $result = $controller->{$method}(...array_merge([$req], array_values($vars)));
                         } elseif (is_callable($handler)) {
                             $result = $handler($req);
                         } else {

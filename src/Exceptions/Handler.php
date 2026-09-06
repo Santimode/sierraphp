@@ -26,6 +26,10 @@ final class Handler
 
         $wantsJson = $request?->expectsJson() ?? false;
 
+        if ($e instanceof \Sierra\Validation\ValidationException) {
+            $wantsJson = true;
+        }
+
         if ($this->debug) {
             return $wantsJson ? $this->renderDebugJson($e) : $this->renderDebugHtml($e);
         }
@@ -51,7 +55,7 @@ final class Handler
     {
         $status = $e instanceof HttpException ? $e->getStatusCode() : 500;
 
-        return (new Response())->json([
+        $data = [
             'error' => [
                 'message' => $e->getMessage(),
                 'exception' => get_class($e),
@@ -60,7 +64,13 @@ final class Handler
                 'trace' => explode("\n", $e->getTraceAsString()),
             ],
             'framework' => 'sierraPHP',
-        ], $status);
+        ];
+
+        if ($e instanceof \Sierra\Validation\ValidationException) {
+            $data['errors'] = $e->getErrors();
+        }
+
+        return (new Response())->json($data, $status);
     }
 
     private function renderDebugHtml(Throwable $e): Response
@@ -113,10 +123,16 @@ final class Handler
             ? $e->getMessage()
             : $this->getStatusMessage($status);
 
-        return (new Response())->json([
+        $data = [
             'message' => $message,
             'framework' => 'sierraPHP',
-        ], $status);
+        ];
+
+        if ($e instanceof \Sierra\Validation\ValidationException) {
+            $data['errors'] = $e->getErrors();
+        }
+
+        return (new Response())->json($data, $status);
     }
 
     private function renderProductionHtml(Throwable $e): Response

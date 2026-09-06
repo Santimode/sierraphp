@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 namespace Sierra\Http;
-final class Request
+class Request
 {
     public function __construct(
         public readonly string $method,
@@ -115,10 +115,16 @@ final class Request
     {
         $newAttributes = $this->attributes;
         $newAttributes[$key] = $value;
-        return new self($this->method, $this->uri, $this->query, $this->body, $this->headers, $newAttributes, $this->server);
+        return new static($this->method, $this->uri, $this->query, $this->body, $this->headers, $newAttributes, $this->server);
     }
     public function withAttributes(array $attrs): self
     {
-        return new self($this->method, $this->uri, $this->query, $this->body, $this->headers, array_merge($this->attributes, $attrs), $this->server);
+        return new static($this->method, $this->uri, $this->query, $this->body, $this->headers, array_merge($this->attributes, $attrs), $this->server);
+    }
+
+    public function validate(array $rules): array
+    {
+        $validator = \Sierra\Validation\Validator::make($this->all(), $rules);
+        return $validator->validate();
     }
 }

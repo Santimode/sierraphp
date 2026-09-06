@@ -1,0 +1,16 @@
+#!/usr/bin/env php
+<?php
+declare(strict_types=1);
+
+require __DIR__ . '/../vendor/autoload.php';
+
+use Sierra\Console\Kernel;
+use Sierra\Application;
+
+$app = Application::create(dirname(__DIR__));
+// Here you can register providers if needed in the CLI
+
+$kernel = new Kernel($app);
+$status = $kernel->handle($argv);
+
+exit($status);

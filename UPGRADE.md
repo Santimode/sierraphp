@@ -1,6 +1,6 @@
-# Upgrading To sierraPHP 2.7.0
+# Upgrading To sierraPHP 2.8.0
 
-This guide covers upgrading your sierraPHP application from older versions (1.x or early 2.x) to the latest **2.7.0** release. 
+This guide covers upgrading your sierraPHP application from older versions (1.x or early 2.x) to the latest **2.8.0** release. 
 
 > [!CAUTION]
 > Before beginning any upgrade process, ensure you have backed up your application and committed all changes to version control.
@@ -108,6 +108,39 @@ if (!function_exists('route')) {
     }
 }
 ```
+
+### Database & Validation (New in 2.8.0)
+Version `2.8.0` introduces a lightweight PDO wrapper and a robust validation component.
+
+To use the new Database component, you must update your `.env` file to include database credentials:
+```env
+DB_CONNECTION=sqlite
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=C:\path\to\your\project\database\database.sqlite
+DB_USERNAME=root
+DB_PASSWORD=
+```
+
+You must also update your `src/Application.php` to bind the Database connection and create the `database` folder.
+Ensure the following snippet is in your `Application` constructor:
+```php
+        $dbConfig = [
+            'driver' => env('DB_CONNECTION', 'sqlite'),
+            'host' => env('DB_HOST', '127.0.0.1'),
+            'port' => env('DB_PORT', '3306'),
+            'database' => env('DB_DATABASE', $this->basePath . '/database/database.sqlite'),
+            'username' => env('DB_USERNAME', 'root'),
+            'password' => env('DB_PASSWORD', ''),
+        ];
+        
+        $this->container->singleton(\Sierra\Database\Connection::class, function () use ($dbConfig) {
+            return new \Sierra\Database\Connection($dbConfig);
+        });
+```
+
+### CLI Tool & Migrations (New in 2.8.0)
+Version `2.8.0` also introduces a unified CLI entry point. Create the `bin/sierra` executable and the `src/Console/Kernel.php` to access `serve`, `route:clear`, and the new `migrate` commands. Ensure `bin/sierra` is executable (`chmod +x bin/sierra`).
 
 ---
 

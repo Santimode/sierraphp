@@ -1,13 +1,13 @@
 # AIHANDOFF.md — sierraPHP
 
-> Version: 2.7.0 | Repo: Santimode/sierraphp | Package: santimode/sierraphp | Updated: 2026-09-07
+> Version: 2.8.0 | Repo: Santimode/sierraphp | Package: santimode/sierraphp | Updated: 2026-09-07
 > Brand: sierraPHP | Namespace: Sierra\ | PHP: ^8.2
 
 This file is the single source of truth for AI agents.
 
 ### 1. Snapshot
-- Repo: https://github.com/Santimode/sierraphp (public, active — MVP scaffold + full HTTP verbs & router completeness + Error Content Negotiation + Security Middleware + Structured File Logging + Advanced Routing + GitHub Actions CI done)
-- Current state: Container, Router (w/ regex constraints, named routes, prod cache), Http, Middleware, Exceptions\Handler (with dual-mode content negotiation), Log (LoggerInterface, Logger, Log facade, logger() helper), and CI workflow all implemented and thoroughly tested. `composer test` passes (53 tests, 166 assertions).
+- Repo: https://github.com/Santimode/sierraphp (public, active — MVP scaffold + HTTP + Router + Middleware + Log + Validation + DB + Migrations + CLI Tool + GitHub Actions CI done)
+- Current state: Container, Router, Http, Middleware, Exceptions\Handler, Log, Validation (Validator, FormRequest), Database (Connection, QueryBuilder, DB facade), Console (CLI tool, Migrations), and CI workflow all implemented and thoroughly tested. `composer test` passes (67 tests, 202 assertions).
 - Goal: Lightweight, ultra-fast PHP micro-framework ready for production workloads.
 
 ### 2. Naming — FINAL
@@ -35,7 +35,7 @@ Tests: full HTTP verbs (GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD, match, any
 - Application is glue
 
 ### 5. File Map (v2.7.0 Scaffold)
-- src/Application.php — creates container, router, logger, runs dispatch; forwards all router verbs, wraps dispatch in try/catch, delegates to Exceptions\Handler on Throwable with Request context
+- src/Application.php — creates container, router, logger, db connection; runs dispatch (with FormRequest auto-resolution); delegates to Exceptions\Handler
 - src/Container/Container.php — bind/singleton/instance/get/has/make (with auto-wiring and optional default value fallback)
 - src/Router/Route.php — value object
 - src/Router/Router.php — get/post/put/patch/delete/options/head/match/any/group with middleware and prefix support
@@ -46,11 +46,15 @@ Tests: full HTTP verbs (GET, POST, PUT, PATCH, DELETE, OPTIONS, HEAD, match, any
 - src/Log/* — LoggerInterface, Logger (structured file logging to storage/logs/sierra.log with context JSON & message interpolation)
 - src/Middleware/* — MiddlewareInterface, Stack, LogMiddleware, CorsMiddleware, SecurityHeadersMiddleware
 - src/Support/helpers.php — abort(), app(), response(), request(), view(), config(), env(), logger()
-- src/Support/Facades/{Route.php, Log.php} — static facades
+- src/Support/Facades/{Route.php, Log.php, DB.php} — static facades
+- src/Database/* — Connection, QueryBuilder
+- src/Validation/* — Validator, ValidationException
+- src/Console/* — Kernel, Commands\MigrateCommand
+- bin/sierra — CLI tool
 - .github/workflows/tests.yml — GitHub Actions CI matrix on PHP 8.2, 8.3, 8.4
 - public/index.php — front controller
 - routes/web.php — example routes
-- tests/Feature/{ContainerTest,RequestTest,RouterTest,HttpExceptionTest,HandlerTest,HelperTest,MiddlewareTest,LoggerTest}.php — Pest, 49 tests / 158 assertions
+- tests/Feature/{ContainerTest,RequestTest,RouterTest,HttpExceptionTest,HandlerTest,HelperTest,MiddlewareTest,LoggerTest,ValidationTest,FormRequestTest,DatabaseTest,MigrationTest}.php — Pest, 67 tests / 202 assertions
 - .env.example, phpunit.xml — required for a clean fresh-clone setup, committed
 
 ### 6. Versioning Inside File (your request)
@@ -78,6 +82,7 @@ Clean filenames: README.md, AIHANDOFF.md, AGENTS.md
 
 ---
 Changelog:
+- 2.8.0: Added Database component (Connection, QueryBuilder, DB facade), Validation component (Validator, FormRequest auto-resolution), CLI tool (`bin/sierra`), and basic Migrations runner. Test suite expanded (67 tests / 202 assertions).
 - 2.7.0: Added advanced routing enhancements: named routes (`->name()`, `route()` helper), route parameter regex constraints (`->where()`), and zero-serialization FastRoute production caching.
 - 2.6.0: Added Structured File Logging (`Sierra\Log\LoggerInterface`, `Sierra\Log\Logger`, `Sierra\Support\Facades\Log`, `logger()` helper), integrated structured logging into `Exceptions\Handler` and `LogMiddleware`, and added comprehensive Pest tests (49 passing tests / 158 assertions).
 - 2.5.0: Added Error Content Negotiation (structured JSON vs pretty HTML in both debug and production modes), built-in security middleware (`CorsMiddleware`, `SecurityHeadersMiddleware`), and GitHub Actions CI workflow for PHP 8.2, 8.3, 8.4.
