@@ -16,7 +16,7 @@
         <h1>⛰️ sierraPHP</h1>
         <p>Light as the Sierra Madre.</p>
         <p>Hello, <strong><?= htmlspecialchars($name ?? 'World') ?></strong>!</p>
-        <p><code>Version: 2.1.0</code> | <code>Repo: santimode/sierraphp</code></p>
+        <p><code>Version: 2.7.0</code> | <code>Repo: santimode/sierraphp</code></p>
         <p><a href="/api/health">/api/health</a> · <a href="/api/hello/Santi">/api/hello/{name}</a></p>
     </div>
 </body>

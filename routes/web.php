@@ -12,7 +12,7 @@ Route::get('/api/health', function() {
     return response()->json([
         'status' => 'ok',
         'framework' => 'sierraPHP',
-        'version' => '2.4.0',
+        'version' => '2.7.0',
         'time' => date('c')
     ]);
 });
